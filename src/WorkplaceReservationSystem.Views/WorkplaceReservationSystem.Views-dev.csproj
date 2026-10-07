@@ -8,4 +8,8 @@
     <RootNamespace>$(MSBuildProjectName.Replace("-dev", ""))</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WorkplaceReservationSystem.Domain\WorkplaceReservationSystem.Domain-dev.csproj" />
+  </ItemGroup>
+
 </Project>
