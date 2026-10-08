@@ -8,4 +8,13 @@
     <RootNamespace>$(MSBuildProjectName.Replace("-dev", ""))</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WorkplaceReservationSystem.Application\WorkplaceReservationSystem.Application-dev.csproj" />
+    <ProjectReference Include="..\WorkplaceReservationSystem.Domain\WorkplaceReservationSystem.Domain-dev.csproj" />
+  </ItemGroup>
+
 </Project>

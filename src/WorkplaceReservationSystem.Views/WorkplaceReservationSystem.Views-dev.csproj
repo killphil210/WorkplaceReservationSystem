@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WorkplaceReservationSystem.Domain\WorkplaceReservationSystem.Domain-dev.csproj" />
+    <ProjectReference Include="..\WorkplaceReservationSystem.ViewModels\WorkplaceReservationSystem.ViewModels-dev.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,3 +1,6 @@
+using WorkplaceReservationSystem.Application.Services;
+using WorkplaceReservationSystem.Application.State;
+using WorkplaceReservationSystem.ViewModels;
 using WorkplaceReservationSystem.Views.Components;
 
 namespace WorkplaceReservationSystem.Views
@@ -11,6 +14,10 @@ namespace WorkplaceReservationSystem.Views
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+                
+            builder.Services.AddScoped<MainViewModel>();
+            builder.Services.AddSingleton<WorkspaceService>();
+            builder.Services.AddSingleton<WorkspaceState>();
 
             var app = builder.Build();
 

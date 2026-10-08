@@ -8,8 +8,4 @@
     <RootNamespace>$(MSBuildProjectName.Replace("-dev", ""))</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

@@ -1,15 +1,15 @@
 ﻿<div class="reservation-grid">
     
     <label class="reservation-label">Datum:</label>
-    <input type="date" class="reservation-input" />
+    <input type="date" class="reservation-input" @bind-value="DataContext.TempReservation.Date" />
 
     <label class="reservation-label">Von:</label>
-    <input type="time" class="reservation-input" />
+    <input type="time" class="reservation-input" @bind-value="DataContext.TempReservation.StartTime" />
 
     <label class="reservation-label">Bis:</label>
-    <input type="time" class="reservation-input" />
+    <input type="time" class="reservation-input" @bind-value="DataContext.TempReservation.EndTime"/>
 
-    <button class="reservation-button">
+    <button class="reservation-button" @onclick="DataContext.ValidateReservation">
         Reservieren
     </button>
 </div>

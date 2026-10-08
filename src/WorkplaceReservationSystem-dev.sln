@@ -15,9 +15,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkplaceReservationSystem.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkplaceReservationSystem.ViewModels-dev", "WorkplaceReservationSystem.ViewModels\WorkplaceReservationSystem.ViewModels-dev.csproj", "{E2C34501-9F70-1437-9452-7A3E4297F865}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkplaceReservationSystem.App-dev", "WorkplaceReservationSystem.App\WorkplaceReservationSystem.App-dev.csproj", "{1D788D70-CC16-BA6C-96EB-B5AE23E8F364}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkplaceReservationSystem.Views-dev", "WorkplaceReservationSystem.Views\WorkplaceReservationSystem.Views-dev.csproj", "{74821BC4-26AA-F9A6-9DE0-E2DBF8FE2D93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkplaceReservationSystem.Application-dev", "WorkplaceReservationSystem.Application\WorkplaceReservationSystem.Application-dev.csproj", "{F37B0FC1-B2C9-C68A-411A-19357F5A4604}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,14 +33,14 @@ Global
 		{E2C34501-9F70-1437-9452-7A3E4297F865}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2C34501-9F70-1437-9452-7A3E4297F865}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2C34501-9F70-1437-9452-7A3E4297F865}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D788D70-CC16-BA6C-96EB-B5AE23E8F364}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D788D70-CC16-BA6C-96EB-B5AE23E8F364}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D788D70-CC16-BA6C-96EB-B5AE23E8F364}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D788D70-CC16-BA6C-96EB-B5AE23E8F364}.Release|Any CPU.Build.0 = Release|Any CPU
 		{74821BC4-26AA-F9A6-9DE0-E2DBF8FE2D93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{74821BC4-26AA-F9A6-9DE0-E2DBF8FE2D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74821BC4-26AA-F9A6-9DE0-E2DBF8FE2D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74821BC4-26AA-F9A6-9DE0-E2DBF8FE2D93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F37B0FC1-B2C9-C68A-411A-19357F5A4604}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F37B0FC1-B2C9-C68A-411A-19357F5A4604}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F37B0FC1-B2C9-C68A-411A-19357F5A4604}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F37B0FC1-B2C9-C68A-411A-19357F5A4604}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,8 +48,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FD6AC06E-2ED4-54F9-D698-FF184C3E877F} = {30E01BB7-838C-462E-B268-B3A41492F843}
 		{E2C34501-9F70-1437-9452-7A3E4297F865} = {D72829C2-DA4F-41BA-B60A-FF750ADCF45F}
-		{1D788D70-CC16-BA6C-96EB-B5AE23E8F364} = {0C8F35AD-311C-4B07-B38C-12A5C9141DD2}
 		{74821BC4-26AA-F9A6-9DE0-E2DBF8FE2D93} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{F37B0FC1-B2C9-C68A-411A-19357F5A4604} = {0C8F35AD-311C-4B07-B38C-12A5C9141DD2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {20F2E002-9CDE-4308-A703-E5A9E80EE275}
