@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,12 +13,42 @@ namespace WorkplaceReservationSystem.Domain.Services
         {
             ValidationResult result = new ValidationResult();
 
-            ValidationResult dateValid = ValidateDate(reservation);
-            ValidationResult timeValid = ValidateTime(reservation);
+            result = ValidateCompleteness(reservation);
 
-            foreach (Reservation workplaceReservation in workplace.Reservations)
+            if (!result.IsValid)
             {
-                //ValidateDate();
+                return result;
+            }
+
+            result = ValidateDate(reservation);
+
+            if (!result.IsValid)
+            {
+                return result;
+            }
+            
+            result = ValidateTime(reservation);
+
+            if (!result.IsValid)
+            {
+                return result;
+            }
+            
+            result = ValidateOverlap(reservation, workplace);           
+
+            return result;
+        }
+
+        private ValidationResult ValidateCompleteness(Reservation reservation)
+        {
+            ValidationResult result = new ValidationResult();
+
+            result.IsValid = true;
+
+            if (!reservation.IsComplete)
+            {
+                result.IsValid = false;
+                result.ErrorMessage = "Die Reservierung ist unvollständig.";
             }
 
             return result;
@@ -31,7 +62,7 @@ namespace WorkplaceReservationSystem.Domain.Services
             if (reservation.StartTime >= reservation.EndTime)
             {
                 result.IsValid = false;
-                result.Error = "EndTime must be after StartTime.";
+                result.ErrorMessage = "Die Startzeit muss vor der Endzeit liegen.";
             }
 
             return result;
@@ -45,7 +76,28 @@ namespace WorkplaceReservationSystem.Domain.Services
             if (reservation.Date < DateOnly.FromDateTime(DateTime.Now))
             {
                 result.IsValid = false;
-                result.Error = "Date cannot be in the past.";
+                result.ErrorMessage = "Das Datum darf nicht in der Vergangenheit liegen.";
+            }
+
+            return result;
+        }
+
+        private ValidationResult ValidateOverlap(Reservation reservation, Workplace workplace)
+        {
+            ValidationResult result = new ValidationResult();
+            result.IsValid = true;
+
+            foreach (Reservation workplaceReservation in workplace.Reservations)
+            {                
+                if (!(reservation.StartTime >= workplaceReservation.EndTime || reservation.EndTime <= workplaceReservation.StartTime))
+                {
+                    if (reservation.Date == workplaceReservation.Date)
+                    {
+                        result.IsValid = false;
+                        result.ErrorMessage = "Der ausgewählte Arbeitsplatz ist im gewünschten Zeitraum belegt.";
+                        break;
+                    }
+                }             
             }
 
             return result;

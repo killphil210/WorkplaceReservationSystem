@@ -7,40 +7,61 @@ namespace WorkplaceReservationSystem.ViewModels
 {
     public class ReservationViewModel
     {
-        public ReservationViewModel(ReservationService reservationService, WorkspaceService workspaceService)
+        public ReservationViewModel(MainViewModel mainViewModel, ReservationService reservationService, WorkspaceService workspaceService)
         {
+            _reservationService = reservationService;
             _workspaceService = workspaceService;
+            MainViewModel = mainViewModel;
 
-            InitializeCommands();
-            ReservationService = new ReservationService();
-            TempReservation = new Reservation(DateOnly.FromDateTime(DateTime.Now), new TimeOnly(8, 0), new TimeOnly(17, 0));
+            InitializeCommands();       
         }
 
         private readonly WorkspaceService _workspaceService;
 
-        public ReservationService ReservationService { get; }
+        private readonly ReservationService _reservationService;
 
-        public Reservation TempReservation { get; set; }
+        public MainViewModel MainViewModel { get; }
+
+        public ValidationResult ValidationResult { get; set; } = new ValidationResult();
 
         #region Commands
-        public ICommand CreateReservationCommand { get; set; }
-        public ICommand ValidateReservationCommand { get; set; }
+        public ICommand UpdateAvailableWorkplacesCommand { get; set; }
+        public ICommand TryCreateReservationCommand { get; set; }
         #endregion
 
-        public void CreateReservation()
+        public void UpdateAvailableWorkplaces()
         {
-            //_reservationService.CreateReservation();
+            //MainViewModel.Update();
         }
 
-        public void ValidateReservation()
+        public void TryCreateReservation()
         {
-            ReservationService.ValidateReservation();
+            ValidationResult = _reservationService.TryCreateReservation(MainViewModel.ReservationDraft, MainViewModel.SelectedWorkplaceId.Value);
+
+            if (ValidationResult.IsValid == true)
+            {
+                MainViewModel.SelectedWorkplaceId = null;
+            }
+
+            MainViewModel.Update();
+        }
+
+        public bool CanExecuteTryCreateReservation()
+        {
+            bool result = true;
+
+            if (MainViewModel.SelectedWorkplaceId == null)
+            {
+                result = false;
+            }
+
+            return result;
         }
 
         private void InitializeCommands()
         {
-            CreateReservationCommand = new RelayCommand(CreateReservation);
-            ValidateReservationCommand = new RelayCommand(ValidateReservation);
+            UpdateAvailableWorkplacesCommand = new RelayCommand(UpdateAvailableWorkplaces);
+            TryCreateReservationCommand = new RelayCommand(TryCreateReservation, CanExecuteTryCreateReservation);
         }
     }
 }

@@ -8,3 +8,11 @@
     grid-gap: 5px;
     justify-self: center;
 }
+
+.reservation-list {
+    height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid lightgray;
+    background: white;
+}

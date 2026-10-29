@@ -14,12 +14,11 @@ namespace WorkplaceReservationSystem.Application.State
             Initialize();
         }
 
-        public List<Workspace> Workspaces { get; set; } = new List<Workspace>();
+        public Workspace Workspace { get; set; }
 
         public void Initialize()
         {
-            Workspace workspace = new Workspace(1, "Stillarbeitsraum");
-            Workspaces.Add(workspace);
+            Workspace = new Workspace(1, "Stillarbeitsraum");            
         }
     }
 }

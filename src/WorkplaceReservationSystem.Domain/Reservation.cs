@@ -19,8 +19,16 @@ namespace WorkplaceReservationSystem.Domain
             this.StartTime = StartTime;
             this.EndTime = EndTime;
         }
-        public DateOnly Date { get; set; }
-        public TimeOnly StartTime { get; set; }
-        public TimeOnly EndTime { get; set; }
+        public DateOnly? Date { get; set; }
+        public TimeOnly? StartTime { get; set; }
+        public TimeOnly? EndTime { get; set; }
+
+        public bool IsComplete
+        {
+            get
+            {
+                return Date.HasValue && StartTime.HasValue && EndTime.HasValue;
+            }
+        }
     }
 }

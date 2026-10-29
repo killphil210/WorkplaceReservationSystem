@@ -5,32 +5,41 @@ namespace WorkplaceReservationSystem.Views.Components
 {
     public partial class Desk
     {
-        [Parameter] public double X { get; set; }
-        [Parameter] public double Y { get; set; }
+        [Parameter] 
+        public bool IsAvailable { get; set; } = true;
+        
+        [Parameter] 
+        public bool IsSelected { get; set; }
+
+        [Parameter] 
+        public EventCallback<int> OnClick { get; set; }
 
         [Parameter] public Workplace Workplace { get; set; } = new Workplace();
 
-        public void OnClick()
+        public string Color
         {
-            if (Workplace.IsReserved == false)
+            get 
             {
-                Workplace.Reservation = new Reservation();
-            }
-            else
-            {
-                Workplace.Reservation = null;
+                if (!IsAvailable)
+                {
+                    return "red";
+                }
+                else if (IsSelected)
+                {
+                    return "lightgrey";
+                }
+                else
+                {
+                    return "grey";
+                }
             }
         }
 
-        public string GetColor()
+        public void HandleClick()
         {
-            if (Workplace.IsReserved)
+            if (IsAvailable)
             {
-                return "lightgrey";
-            }
-            else
-            {
-                return "grey";
+                OnClick.InvokeAsync(Workplace.Id);
             }
         }
     }

@@ -18,6 +18,7 @@ namespace WorkplaceReservationSystem.Views
             builder.Services.AddScoped<MainViewModel>();
             builder.Services.AddSingleton<WorkspaceService>();
             builder.Services.AddSingleton<WorkspaceState>();
+            builder.Services.AddTransient<ReservationService>();
 
             var app = builder.Build();
 

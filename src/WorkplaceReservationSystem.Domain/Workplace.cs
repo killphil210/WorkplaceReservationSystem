@@ -17,15 +17,6 @@ namespace WorkplaceReservationSystem.Domain
 
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public bool IsReserved 
-        { 
-            get
-            {
-                return Reservation != null;
-            }
-        }
-
-        public Reservation Reservation { get; set; }
 
         public List<Reservation> Reservations { get; set; } = new List<Reservation>();
     }

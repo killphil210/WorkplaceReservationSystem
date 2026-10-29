@@ -8,7 +8,17 @@ namespace WorkplaceReservationSystem.Domain
 {
     public class ValidationResult
     {
+        public ValidationResult()
+        {
+        }
+
+        public ValidationResult(bool isValid, string error)
+        {
+            IsValid = isValid;
+            ErrorMessage = error;
+        }
+
         public bool IsValid;
-        public string Error;
+        public string ErrorMessage;
     }
 }

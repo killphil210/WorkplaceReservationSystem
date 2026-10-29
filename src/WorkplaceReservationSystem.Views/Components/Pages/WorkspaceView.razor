@@ -1,10 +1,26 @@
-﻿@using WorkplaceReservationSystem.Views.Components
+﻿@using WorkplaceReservationSystem.Domain
+@using WorkplaceReservationSystem.Views.Components
 
 <div class="workspace-grid">
-    <Desk />
-    <Desk />
-    <Desk />
-    <Desk />
+    <label>@DataContext.WorkspaceService.GetWorkspace().Name</label>
+    <div></div>
+
+    @foreach (Workplace workplace in DataContext.WorkspaceService.GetWorkspace().Workplaces)
+    {
+        <Desk Workplace="@workplace" IsSelected="@(workplace.Id == DataContext.MainViewModel.SelectedWorkplaceId)" IsAvailable="@DataContext.MainViewModel.AvailableWorkplaces.Contains(workplace.Id)" OnClick="OnDeskClicked" />
+    }
+
+    <div class="reservation-list">
+        @foreach (Workplace workplace in DataContext.WorkspaceService.GetWorkspace().Workplaces)
+        {
+            <h7>@workplace.Name:</h7>
+            foreach (Reservation reservation in workplace.Reservations)
+            {
+                <div>@reservation.Date.ToString(): @reservation.StartTime.ToString() - @reservation.EndTime.ToString()</div>
+            }
+            <br />
+        }
+    </div>
 </div>
 
 

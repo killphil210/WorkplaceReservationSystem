@@ -1,15 +1,17 @@
 ﻿<div class="reservation-grid">
     
     <label class="reservation-label">Datum:</label>
-    <input type="date" class="reservation-input" @bind-value="DataContext.TempReservation.Date" />
+    <input type="date" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.Date" @onblur="OnReservationDraftChanged" />
 
     <label class="reservation-label">Von:</label>
-    <input type="time" class="reservation-input" @bind-value="DataContext.TempReservation.StartTime" />
+    <input type="time" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.StartTime" @onblur="OnReservationDraftChanged" />
 
     <label class="reservation-label">Bis:</label>
-    <input type="time" class="reservation-input" @bind-value="DataContext.TempReservation.EndTime"/>
+    <input type="time" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.EndTime" @onblur="OnReservationDraftChanged" />
 
-    <button class="reservation-button" @onclick="DataContext.ValidateReservation">
+    <label>@DataContext.ValidationResult.ErrorMessage</label>
+
+    <button class="reservation-button" @onclick="DataContext.TryCreateReservationCommand.Execute" disabled="@(!DataContext.TryCreateReservationCommand.CanExecute(null))">
         Reservieren
     </button>
 </div>
