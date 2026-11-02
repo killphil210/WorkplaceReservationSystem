@@ -1,0 +1,5 @@
+﻿reservation-entry-grid {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(3, auto);
+}

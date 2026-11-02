@@ -10,13 +10,13 @@ namespace WorkplaceReservationSystem.ViewModels
         public ReservationViewModel(MainViewModel mainViewModel, ReservationService reservationService, WorkspaceService workspaceService)
         {
             _reservationService = reservationService;
-            _workspaceService = workspaceService;
+            WorkspaceService = workspaceService;
             MainViewModel = mainViewModel;
 
             InitializeCommands();       
         }
 
-        private readonly WorkspaceService _workspaceService;
+        public WorkspaceService WorkspaceService { get; }
 
         private readonly ReservationService _reservationService;
 
@@ -27,11 +27,13 @@ namespace WorkplaceReservationSystem.ViewModels
         #region Commands
         public ICommand UpdateAvailableWorkplacesCommand { get; set; }
         public ICommand TryCreateReservationCommand { get; set; }
+        public ICommand EditReservationCommand { get; set; }
+        public ICommand DeleteReservationCommand { get; set; }
         #endregion
 
         public void UpdateAvailableWorkplaces()
         {
-            //MainViewModel.Update();
+            MainViewModel.Update();
         }
 
         public void TryCreateReservation()
@@ -58,10 +60,23 @@ namespace WorkplaceReservationSystem.ViewModels
             return result;
         }
 
+        public void EditReservation(int reservationId)
+        {
+            //MainViewModel.EditReservation(reservationId);
+        }
+
+        public void DeleteReservation(int reservationId)
+        {
+            _reservationService.DeleteReservation(reservationId);
+            MainViewModel.Update();
+        }
+    
         private void InitializeCommands()
         {
             UpdateAvailableWorkplacesCommand = new RelayCommand(UpdateAvailableWorkplaces);
             TryCreateReservationCommand = new RelayCommand(TryCreateReservation, CanExecuteTryCreateReservation);
+            EditReservationCommand = new RelayCommand<int>(EditReservation);
+            DeleteReservationCommand = new RelayCommand<int>(DeleteReservation);
         }
     }
 }

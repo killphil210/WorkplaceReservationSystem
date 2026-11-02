@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
 using WorkplaceReservationSystem.ViewModels;
+using WorkplaceReservationSystem.Views.Components.Events;
 
 namespace WorkplaceReservationSystem.Views.Components.Pages
 {
@@ -13,6 +14,19 @@ namespace WorkplaceReservationSystem.Views.Components.Pages
         {
             DataContext.UpdateAvailableWorkplacesCommand.Execute(null);
         }
+
+        public void OnReservationEntryAction((ReservationAction.ActionType actionType, int reservationId) action)
+        {            
+            switch (action.actionType)
+            {
+                case ReservationAction.ActionType.Edit:
+                    
+                    break;
+                case ReservationAction.ActionType.Delete:
+                    DataContext.DeleteReservationCommand.Execute(action.reservationId);
+                    break;
+            }
+        }       
 
         protected override void OnInitialized()
         {

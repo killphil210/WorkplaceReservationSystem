@@ -13,12 +13,15 @@ namespace WorkplaceReservationSystem.Domain
 
         }
 
-        public Reservation(DateOnly Date, TimeOnly StartTime, TimeOnly EndTime)
+        public Reservation(DateOnly Date, TimeOnly StartTime, TimeOnly EndTime, int Id)
         {
             this.Date = Date;
             this.StartTime = StartTime;
             this.EndTime = EndTime;
+            this.Id = Id;
         }
+
+        public int Id { get; set; }
         public DateOnly? Date { get; set; }
         public TimeOnly? StartTime { get; set; }
         public TimeOnly? EndTime { get; set; }

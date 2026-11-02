@@ -14,9 +14,63 @@ namespace WorkplaceReservationSystem.Application.Services
         private readonly ReservationValidator _reservationValidator = new ReservationValidator();
         private readonly WorkspaceService _workspaceService;
 
-        public ValidationResult ValidateReservation(Reservation Reservation, Workplace Workplace)
+        private int _lastReservationId;       
+
+        private int GetNextReservationId()
+        {
+            int result;
+                       
+            _lastReservationId++;
+            result = _lastReservationId;
+
+            return result;            
+        }
+
+        public Reservation CreateReservation(Reservation reservationDraft)
+        {
+            Reservation result = new Reservation(reservationDraft.Date.Value, reservationDraft.StartTime.Value, reservationDraft.EndTime.Value, GetNextReservationId());
+
+            return result;
+        }
+
+        public ValidationResult ValidateReservation(Reservation Reservation)
         {           
-            return _reservationValidator.Validate(Reservation, Workplace);
+            return _reservationValidator.Validate(Reservation);
+        }
+
+        public void DeleteReservation(int reservationId)
+        {
+            foreach (Workplace workplace in _workspaceService.GetWorkspace().Workplaces)
+            {
+                foreach (Reservation reservation in workplace.Reservations)
+                {
+                    if (reservation.Id == reservationId)
+                    {
+                        workplace.Reservations.Remove(reservation);
+                        return;
+                    }
+                }
+            }
+            throw new InvalidOperationException($"Reservation with ID {reservationId} not found.");
+        }
+
+        public Reservation? GetReservationById(int reservationId)
+        {
+            Reservation result = null;
+
+            foreach (Workplace workplace in _workspaceService.GetWorkspace().Workplaces)
+            {
+                foreach (Reservation reservation in workplace.Reservations)
+                {
+                    if (reservation.Id == reservationId)
+                    {
+                        result = reservation;
+                        return result;
+                    }
+                }
+            }
+
+            return result;
         }
 
         public ValidationResult TryCreateReservation(Reservation reservation, int? selectedWorkplaceId)
@@ -38,14 +92,14 @@ namespace WorkplaceReservationSystem.Application.Services
                 throw new InvalidOperationException($"Workplace with ID {selectedWorkplaceId.Value} not found.");
             }
 
-            result = ValidateReservation(reservation, SelectedWorkplace);
+            result = _reservationValidator.Validate(reservation, SelectedWorkplace);
 
             if (result.IsValid)
             {
-                SelectedWorkplace.Reservations.Add(reservation);
-
+                SelectedWorkplace.Reservations.Add(CreateReservation(reservation));
+                
                 result.IsValid = true;
-                Debug.WriteLine($"Validation succeeded");
+
                 return result;
             }
             else

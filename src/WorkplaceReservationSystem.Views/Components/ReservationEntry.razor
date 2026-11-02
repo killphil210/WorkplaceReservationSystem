@@ -1,0 +1,7 @@
+﻿
+<div class="reservation-entry-grid">
+    <label>@Reservation.Date.ToString(): @Reservation.StartTime.ToString() - @Reservation.EndTime.ToString()</label>
+    <button>Edit</button>
+    <button @onclick="() => OnDeleteButtonClicked(Reservation.Id)">Delete</button>
+</div>
+

@@ -1,4 +1,5 @@
-﻿<div class="reservation-grid">
+﻿@using WorkplaceReservationSystem.Domain
+<div class="reservation-grid">
     
     <label class="reservation-label">Datum:</label>
     <input type="date" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.Date" @onblur="OnReservationDraftChanged" />
@@ -9,11 +10,25 @@
     <label class="reservation-label">Bis:</label>
     <input type="time" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.EndTime" @onblur="OnReservationDraftChanged" />
 
-    <label>@DataContext.ValidationResult.ErrorMessage</label>
+    <label class="error-label">@DataContext.ValidationResult.ErrorMessage</label>
 
     <button class="reservation-button" @onclick="DataContext.TryCreateReservationCommand.Execute" disabled="@(!DataContext.TryCreateReservationCommand.CanExecute(null))">
         Reservieren
     </button>
+
+    <br/>
+
+    <div class="reservation-list">
+        @foreach (Workplace workplace in DataContext.WorkspaceService.GetWorkspace().Workplaces)
+        {
+            <h7>@workplace.Name:</h7>
+ @foreach (Reservation reservation in workplace.Reservations.OrderBy(r => r.Date).ThenBy(r => r.StartTime))
+            {
+                <ReservationEntry Reservation="reservation" OnAction="OnReservationEntryAction"/>
+            }
+            <br />
+        }
+    </div>
 </div>
 
 

@@ -32,7 +32,7 @@ namespace WorkplaceReservationSystem.ViewModels
 
         public void ExecuteChangeSelectedWorkplace(int workplaceId)
         {
-            MainViewModel.SelectedWorkplaceId = workplaceId;
+            MainViewModel.SelectWorkplace(workplaceId);
         }
 
         private void InitializeCommands()

@@ -57,14 +57,38 @@ namespace WorkplaceReservationSystem.ViewModels
         {
             get
             {
-                if (ReservationDraft.IsComplete)
+                if (_reservationService.ValidateReservation(ReservationDraft).IsValid)
                 {
                     return _workspaceService.GetAvailability(ReservationDraft);                    
                 }
                 else
                 {
-                    return new HashSet<int>();
+                    return GetWorkplaceIds();
                 }
+            }
+        }
+
+        private HashSet<int> GetWorkplaceIds()
+        {
+            HashSet<int> result = new HashSet<int>();
+
+            foreach (Workplace workplace in _workspaceService.GetWorkspace().Workplaces)
+            {
+                result.Add(workplace.Id);
+            }
+
+            return result;
+        }
+
+        public void SelectWorkplace(int id)
+        {
+            if (SelectedWorkplaceId != id)
+            {
+                SelectedWorkplaceId = id;
+            }
+            else
+            {
+                SelectedWorkplaceId = null;
             }
         }
 

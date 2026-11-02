@@ -9,6 +9,34 @@ namespace WorkplaceReservationSystem.Domain.Services
 {
     public class ReservationValidator
     {
+        public ValidationResult Validate(Reservation reservation)
+        {
+            ValidationResult result = new ValidationResult();
+
+            result = ValidateCompleteness(reservation);
+
+            if (!result.IsValid)
+            {
+                return result;
+            }
+
+            result = ValidateDate(reservation);
+
+            if (!result.IsValid)
+            {
+                return result;
+            }
+
+            result = ValidateTime(reservation);
+
+            if (!result.IsValid)
+            {
+                return result;
+            }           
+
+            return result;
+        }
+
         public ValidationResult Validate(Reservation reservation, Workplace workplace)
         {
             ValidationResult result = new ValidationResult();
