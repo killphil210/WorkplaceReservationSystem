@@ -20,7 +20,7 @@ namespace WorkplaceReservationSystem.Views.Components.Pages
             switch (action.actionType)
             {
                 case ReservationAction.ActionType.Edit:
-                    
+                    DataContext.StartEditingReservationCommand.Execute(action.reservationId);
                     break;
                 case ReservationAction.ActionType.Delete:
                     DataContext.DeleteReservationCommand.Execute(action.reservationId);

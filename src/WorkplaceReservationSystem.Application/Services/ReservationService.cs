@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using WorkplaceReservationSystem.Application.Infrastructure;
 using WorkplaceReservationSystem.Domain;
 using WorkplaceReservationSystem.Domain.Services;
 
@@ -6,78 +7,58 @@ namespace WorkplaceReservationSystem.Application.Services
 {
     public class ReservationService
     {
-        public ReservationService(WorkspaceService workspaceService)
+        public ReservationService(WorkplaceReservationDbContext dbContext)
         {
-            _workspaceService = workspaceService;
+            _dbContext = dbContext;
         }
 
         private readonly ReservationValidator _reservationValidator = new ReservationValidator();
-        private readonly WorkspaceService _workspaceService;
+        private readonly WorkplaceReservationDbContext _dbContext;
 
-        private int _lastReservationId;       
-
-        private int GetNextReservationId()
+        private void CreateReservation(Reservation reservationDraft)
         {
-            int result;
-                       
-            _lastReservationId++;
-            result = _lastReservationId;
-
-            return result;            
+            _dbContext.Reservations.Add(reservationDraft.Copy());
+            _dbContext.SaveChanges();
         }
 
-        public Reservation CreateReservation(Reservation reservationDraft)
-        {
-            Reservation result = new Reservation(reservationDraft.Date.Value, reservationDraft.StartTime.Value, reservationDraft.EndTime.Value, GetNextReservationId());
-
-            return result;
-        }
-
-        public ValidationResult ValidateReservation(Reservation Reservation)
+        public ValidationResult ValidateReservation(Reservation reservation)
         {           
-            return _reservationValidator.Validate(Reservation);
+            return _reservationValidator.Validate(reservation);
+        }
+
+        public ValidationResult ValidateWorkplaceAvailability(Reservation reservation, int workplaceId)
+        {
+
+            return _reservationValidator.Validate(reservation, GetReservationsByWorkplaceId(workplaceId));
         }
 
         public void DeleteReservation(int reservationId)
         {
-            foreach (Workplace workplace in _workspaceService.GetWorkspace().Workplaces)
-            {
-                foreach (Reservation reservation in workplace.Reservations)
-                {
-                    if (reservation.Id == reservationId)
-                    {
-                        workplace.Reservations.Remove(reservation);
-                        return;
-                    }
-                }
-            }
-            throw new InvalidOperationException($"Reservation with ID {reservationId} not found.");
+            Reservation reservation = _dbContext.Reservations.FirstOrDefault(reservation => reservation.Id == reservationId);
+            _dbContext.Reservations.Remove(reservation);
+            _dbContext.SaveChanges();
         }
 
-        public Reservation? GetReservationById(int reservationId)
+        public List<Reservation> GetReservations()
         {
-            Reservation result = null;
-
-            foreach (Workplace workplace in _workspaceService.GetWorkspace().Workplaces)
-            {
-                foreach (Reservation reservation in workplace.Reservations)
-                {
-                    if (reservation.Id == reservationId)
-                    {
-                        result = reservation;
-                        return result;
-                    }
-                }
-            }
-
-            return result;
+            return _dbContext.Reservations.OrderBy(reservation => reservation.Date).ThenBy(reservation => reservation.StartTime).ToList();
         }
 
-        public ValidationResult TryCreateReservation(Reservation reservation, int? selectedWorkplaceId)
+        public Reservation GetReservationById(int reservationId)
+        {
+            return _dbContext.Reservations.FirstOrDefault(reservation => reservation.Id == reservationId);
+        }
+
+        public List<Reservation> GetReservationsByWorkplaceId(int workplaceId)
+        {
+            return _dbContext.Reservations.Where(reservation => reservation.WorkplaceId == workplaceId).ToList();
+        }
+
+        public ValidationResult TryCreateReservation(Reservation reservation)
         {
             ValidationResult result = new ValidationResult();
 
-            if (selectedWorkplaceId == null)
+            if (reservation.WorkplaceId == null)
             {
                 result.IsValid = false;
                 result.ErrorMessage = "Kein Arbeitsplatz ausgewählt.";
@@ -85,19 +66,13 @@ namespace WorkplaceReservationSystem.Application.Services
                 return result;
             }
 
-            Workplace? SelectedWorkplace = _workspaceService.GetWorkplaceById(selectedWorkplaceId.Value);
+            List<Reservation> workplaceReservations = GetReservationsByWorkplaceId(reservation.WorkplaceId.Value);
 
-            if (SelectedWorkplace == null)
-            {
-                throw new InvalidOperationException($"Workplace with ID {selectedWorkplaceId.Value} not found.");
-            }
-
-            result = _reservationValidator.Validate(reservation, SelectedWorkplace);
+            result = _reservationValidator.Validate(reservation, workplaceReservations);
 
             if (result.IsValid)
             {
-                SelectedWorkplace.Reservations.Add(CreateReservation(reservation));
-                
+                CreateReservation(reservation);                
                 result.IsValid = true;
 
                 return result;

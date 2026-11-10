@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using WorkplaceReservationSystem.Application.Infrastructure;
 using WorkplaceReservationSystem.Application.Services;
 using WorkplaceReservationSystem.Application.State;
 using WorkplaceReservationSystem.ViewModels;
@@ -16,9 +18,13 @@ namespace WorkplaceReservationSystem.Views
                 .AddInteractiveServerComponents();
                 
             builder.Services.AddScoped<MainViewModel>();
-            builder.Services.AddSingleton<WorkspaceService>();
+            builder.Services.AddScoped<WorkspaceService>();
             builder.Services.AddSingleton<WorkspaceState>();
             builder.Services.AddTransient<ReservationService>();
+            builder.Services.AddDbContext<WorkplaceReservationDbContext>(
+            options =>
+                options.UseSqlite(
+                    "Data Source=WorkplaceReservationSystem.db"));
 
             var app = builder.Build();
 

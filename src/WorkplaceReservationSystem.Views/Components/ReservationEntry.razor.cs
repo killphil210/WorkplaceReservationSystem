@@ -18,7 +18,7 @@ namespace WorkplaceReservationSystem.Views.Components
             OnAction.InvokeAsync((ReservationAction.ActionType.Edit, Reservation.Id));
         }
 
-        public void OnDeleteButtonClicked(int Id)
+        public void OnDeleteButtonClicked()
         {
             OnAction.InvokeAsync((ReservationAction.ActionType.Delete, Reservation.Id));
         }                

@@ -13,10 +13,10 @@ namespace WorkplaceReservationSystem.Domain.Services
         {
             ValidationResult result = new ValidationResult();
 
-            result = ValidateCompleteness(reservation);
-
-            if (!result.IsValid)
+            if (!reservation.HasTimeframe)
             {
+                result.IsValid = false;
+                result.ErrorMessage = "Die Reservierung ist unvollständig.";
                 return result;
             }
 
@@ -37,16 +37,17 @@ namespace WorkplaceReservationSystem.Domain.Services
             return result;
         }
 
-        public ValidationResult Validate(Reservation reservation, Workplace workplace)
+        public ValidationResult Validate(Reservation reservation, List<Reservation> reservations)
         {
-            ValidationResult result = new ValidationResult();
+            ValidationResult result = new ValidationResult();          
+            result.IsValid = true;
 
-            result = ValidateCompleteness(reservation);
-
-            if (!result.IsValid)
+            if (!reservation.HasTimeframe)
             {
+                result.IsValid = false;
+                result.ErrorMessage = "Die Reservierung ist unvollständig.";
                 return result;
-            }
+            }     
 
             result = ValidateDate(reservation);
 
@@ -62,22 +63,7 @@ namespace WorkplaceReservationSystem.Domain.Services
                 return result;
             }
             
-            result = ValidateOverlap(reservation, workplace);           
-
-            return result;
-        }
-
-        private ValidationResult ValidateCompleteness(Reservation reservation)
-        {
-            ValidationResult result = new ValidationResult();
-
-            result.IsValid = true;
-
-            if (!reservation.IsComplete)
-            {
-                result.IsValid = false;
-                result.ErrorMessage = "Die Reservierung ist unvollständig.";
-            }
+            result = ValidateOverlap(reservation, reservations);           
 
             return result;
         }
@@ -110,22 +96,22 @@ namespace WorkplaceReservationSystem.Domain.Services
             return result;
         }
 
-        private ValidationResult ValidateOverlap(Reservation reservation, Workplace workplace)
+        private ValidationResult ValidateOverlap(Reservation reservation, List<Reservation> reservations)
         {
             ValidationResult result = new ValidationResult();
             result.IsValid = true;
 
-            foreach (Reservation workplaceReservation in workplace.Reservations)
-            {                
-                if (!(reservation.StartTime >= workplaceReservation.EndTime || reservation.EndTime <= workplaceReservation.StartTime))
+            foreach (Reservation existingReservation in reservations)
+            {   
+                if(reservation.Date == existingReservation.Date)
                 {
-                    if (reservation.Date == workplaceReservation.Date)
+                    if (!(reservation.StartTime >= existingReservation.EndTime || reservation.EndTime <= existingReservation.StartTime))
                     {
                         result.IsValid = false;
                         result.ErrorMessage = "Der ausgewählte Arbeitsplatz ist im gewünschten Zeitraum belegt.";
                         break;
                     }
-                }             
+                }
             }
 
             return result;

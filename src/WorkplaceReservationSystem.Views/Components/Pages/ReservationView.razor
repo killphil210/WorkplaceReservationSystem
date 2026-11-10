@@ -1,32 +1,45 @@
 ﻿@using WorkplaceReservationSystem.Domain
 <div class="reservation-grid">
     
+    
     <label class="reservation-label">Datum:</label>
-    <input type="date" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.Date" @onblur="OnReservationDraftChanged" />
-
+    <input type="date" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.Date" @bind-value:after="OnReservationDraftChanged" />
+    <div class="date-spacer"/>
     <label class="reservation-label">Von:</label>
-    <input type="time" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.StartTime" @onblur="OnReservationDraftChanged" />
+    <input type="time" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.StartTime" @bind-value:after="OnReservationDraftChanged" />
 
     <label class="reservation-label">Bis:</label>
-    <input type="time" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.EndTime" @onblur="OnReservationDraftChanged" />
+    <input type="time" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.EndTime" @bind-value:after="OnReservationDraftChanged" />
 
     <label class="error-label">@DataContext.ValidationResult.ErrorMessage</label>
 
-    <button class="reservation-button" @onclick="DataContext.TryCreateReservationCommand.Execute" disabled="@(!DataContext.TryCreateReservationCommand.CanExecute(null))">
-        Reservieren
-    </button>
+
+    @if (DataContext.IsEditMode)
+    {
+        <div class="edit-grid">
+            <button class="reservation-button" @onclick="DataContext.CancelEditingReservationCommand.Execute">
+                Abbrechen
+            </button>
+
+            <button class="reservation-button" @onclick="DataContext.SaveEditedReservationCommand.Execute" disabled="@(!DataContext.SaveEditedReservationCommand.CanExecute(null))">
+                Speichern
+            </button>
+        </div>
+    }
+    else
+    {
+        <button class="reservation-button" @onclick="DataContext.TryCreateReservationCommand.Execute" disabled="@(!DataContext.TryCreateReservationCommand.CanExecute(null))">
+            Reservieren
+        </button>
+    }
 
     <br/>
 
+    <label class="reservation-list-header">Meine Reservierungen: </label>
     <div class="reservation-list">
-        @foreach (Workplace workplace in DataContext.WorkspaceService.GetWorkspace().Workplaces)
+        @foreach (Reservation reservation in DataContext.ReservationService.GetReservations())
         {
-            <h7>@workplace.Name:</h7>
- @foreach (Reservation reservation in workplace.Reservations.OrderBy(r => r.Date).ThenBy(r => r.StartTime))
-            {
-                <ReservationEntry Reservation="reservation" OnAction="OnReservationEntryAction"/>
-            }
-            <br />
+            <ReservationEntry Reservation="reservation" OnAction="OnReservationEntryAction"/>          
         }
     </div>
 </div>

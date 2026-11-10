@@ -1,4 +1,5 @@
-﻿using WorkplaceReservationSystem.Application.State;
+﻿using WorkplaceReservationSystem.Application.Infrastructure;
+using WorkplaceReservationSystem.Application.State;
 using WorkplaceReservationSystem.Domain;
 using WorkplaceReservationSystem.Domain.Services;
 
@@ -6,42 +7,56 @@ namespace WorkplaceReservationSystem.Application.Services
 {
     public class WorkspaceService
     {
-        private readonly WorkspaceState _workspaceState = new WorkspaceState();
-        private readonly ReservationValidator _reservationValidator = new ReservationValidator();
-
-        public Workspace GetWorkspace()
+        public WorkspaceService(WorkplaceReservationDbContext dbContext, ReservationService reservationService)
         {
-            return _workspaceState.Workspace;
+            _dbContext = dbContext;
+            _reservationService = reservationService;
+
+            InitializeDB();
         }
 
-        public Workplace? GetWorkplaceById(int workplaceId)
+        private readonly ReservationService _reservationService;
+        private readonly WorkplaceReservationDbContext _dbContext;
+
+
+        public List<Workplace> GetWorkplaces()
         {
-            foreach (Workplace workplace in _workspaceState.Workspace.Workplaces)
-            {
-                if (workplace.Id == workplaceId)
-                {
-                    return workplace;
-                }            
-            }
-            
-            return null;
+            return _dbContext.Workplaces.ToList();
+        }
+
+        public Workplace GetWorkplaceById(int workplaceId)
+        {
+            return _dbContext.Workplaces.FirstOrDefault(workplace => workplace.Id == workplaceId);
         }
 
         public HashSet<int> GetAvailability(Reservation reservationDraft)
         {
             HashSet<int> result = new HashSet<int>();
 
-            foreach (Workplace workplace in _workspaceState.Workspace.Workplaces)
+            foreach (Workplace workplace in _dbContext.Workplaces)
             {
-                ValidationResult validationResult = _reservationValidator.Validate(reservationDraft, workplace);
-                
+                ValidationResult validationResult = _reservationService.ValidateWorkplaceAvailability(reservationDraft, workplace.Id);
+
                 if (validationResult.IsValid)
                 {
                     result.Add(workplace.Id);
                 }
             }
-
+            
             return result;
         }
+
+        public void InitializeDB()
+        {
+            if (!_dbContext.Workplaces.Any())
+            {
+                for (int i = 1; i <= 4; i++)
+                {
+                    _dbContext.Workplaces.Add(new Workplace($"AP_{i}"));
+                }
+                _dbContext.SaveChanges();
+            }
+        }
+
     }
 }

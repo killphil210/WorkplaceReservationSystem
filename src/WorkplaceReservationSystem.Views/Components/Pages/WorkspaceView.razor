@@ -2,12 +2,12 @@
 @using WorkplaceReservationSystem.Views.Components
 
 <div class="workspace-grid">
-    <label>@DataContext.WorkspaceService.GetWorkspace().Name</label>
+    <label>Stillarbeitsraum</label>
     <div></div>
 
-    @foreach (Workplace workplace in DataContext.WorkspaceService.GetWorkspace().Workplaces)
+    @foreach (Workplace workplace in DataContext.WorkspaceService.GetWorkplaces())
     {
-        <Desk Workplace="@workplace" IsSelected="@(workplace.Id == DataContext.MainViewModel.SelectedWorkplaceId)" IsAvailable="@DataContext.MainViewModel.AvailableWorkplaces.Contains(workplace.Id)" OnClick="OnDeskClicked" />
+        <Desk Workplace="@workplace" IsSelected="@(workplace.Id == DataContext.MainViewModel.ReservationDraft.WorkplaceId)" IsAvailable="@DataContext.MainViewModel.AvailableWorkplaces.Contains(workplace.Id)" OnClick="OnDeskClicked" />
     }
 </div>
 

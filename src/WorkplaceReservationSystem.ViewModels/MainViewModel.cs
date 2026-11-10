@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,8 +25,6 @@ namespace WorkplaceReservationSystem.ViewModels
 
         private readonly WorkspaceService _workspaceService;
         private readonly ReservationService _reservationService;
-        
-        private int? _selectedWorkplaceId = null;
 
         public event Action OnChange;
 
@@ -38,20 +37,6 @@ namespace WorkplaceReservationSystem.ViewModels
             StartTime = TimeOnly.FromDateTime(DateTime.Now),
             EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
         };
-        
-
-        public int? SelectedWorkplaceId 
-        { 
-            get
-            {
-                return _selectedWorkplaceId;
-            }
-            set
-            {                
-                _selectedWorkplaceId = value;
-                OnChange?.Invoke();                                
-            }
-        }
 
         public HashSet<int> AvailableWorkplaces
         {
@@ -72,7 +57,7 @@ namespace WorkplaceReservationSystem.ViewModels
         {
             HashSet<int> result = new HashSet<int>();
 
-            foreach (Workplace workplace in _workspaceService.GetWorkspace().Workplaces)
+            foreach (Workplace workplace in _workspaceService.GetWorkplaces())
             {
                 result.Add(workplace.Id);
             }
@@ -80,16 +65,18 @@ namespace WorkplaceReservationSystem.ViewModels
             return result;
         }
 
-        public void SelectWorkplace(int id)
+        public void SelectWorkplace(int? id)
         {
-            if (SelectedWorkplaceId != id)
+            if (ReservationDraft.WorkplaceId != id)
             {
-                SelectedWorkplaceId = id;
+                ReservationDraft.WorkplaceId = id;
             }
             else
             {
-                SelectedWorkplaceId = null;
+                ReservationDraft.WorkplaceId = null;
             }
+
+            Update();
         }
 
         public void Update()
