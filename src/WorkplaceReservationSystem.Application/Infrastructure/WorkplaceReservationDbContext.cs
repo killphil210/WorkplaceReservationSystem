@@ -16,5 +16,6 @@ namespace WorkplaceReservationSystem.Application.Infrastructure
 
         public DbSet<Workplace> Workplaces { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

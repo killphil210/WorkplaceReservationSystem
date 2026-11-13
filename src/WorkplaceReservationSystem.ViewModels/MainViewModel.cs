@@ -8,23 +8,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using WorkplaceReservationSystem.Application.Services;
-using WorkplaceReservationSystem.Application.State;
 using WorkplaceReservationSystem.Domain;
 
 namespace WorkplaceReservationSystem.ViewModels
 {
     public class MainViewModel
     {
-        public MainViewModel(WorkspaceService workspaceService, ReservationService reservationService)
+        public MainViewModel(ReservationService reservationService, UserService userService, WorkspaceService workspaceService)
         {
-            _workspaceService = workspaceService;
             _reservationService = reservationService;
-
+            _userService = userService;
+            _workspaceService = workspaceService;
+            
             InitializeViewModels();
         }
 
-        private readonly WorkspaceService _workspaceService;
         private readonly ReservationService _reservationService;
+        private readonly UserService _userService;
+        private readonly WorkspaceService _workspaceService;
+        
 
         public event Action OnChange;
 

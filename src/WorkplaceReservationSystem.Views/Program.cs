@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WorkplaceReservationSystem.Application.Infrastructure;
 using WorkplaceReservationSystem.Application.Services;
-using WorkplaceReservationSystem.Application.State;
 using WorkplaceReservationSystem.ViewModels;
 using WorkplaceReservationSystem.Views.Components;
 
@@ -19,7 +18,7 @@ namespace WorkplaceReservationSystem.Views
                 
             builder.Services.AddScoped<MainViewModel>();
             builder.Services.AddScoped<WorkspaceService>();
-            builder.Services.AddSingleton<WorkspaceState>();
+            builder.Services.AddScoped<UserService>();
             builder.Services.AddTransient<ReservationService>();
             builder.Services.AddDbContext<WorkplaceReservationDbContext>(
             options =>

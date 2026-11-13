@@ -25,6 +25,7 @@ namespace WorkplaceReservationSystem.Domain
 
         public int Id { get; set; }
         public int? WorkplaceId { get; set; }
+        public int UserId { get; set; }
 
         public DateOnly? Date { get; set; }
         public TimeOnly? StartTime { get; set; }
@@ -43,7 +44,7 @@ namespace WorkplaceReservationSystem.Domain
             get
             {
                 return Date.HasValue && StartTime.HasValue && EndTime.HasValue;
-            }
+            }            
         }
 
         public Reservation Copy()
@@ -52,6 +53,7 @@ namespace WorkplaceReservationSystem.Domain
 
             result.Id = this.Id;
             result.WorkplaceId = this.WorkplaceId;
+            result.UserId = this.UserId;
             result.Date = this.Date;
             result.StartTime = this.StartTime;
             result.EndTime = this.EndTime;
