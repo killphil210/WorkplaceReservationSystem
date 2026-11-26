@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Input;
 using WorkplaceReservationSystem.Application.Services;
 using WorkplaceReservationSystem.Domain;
@@ -8,9 +9,10 @@ namespace WorkplaceReservationSystem.ViewModels
 {
     public class ReservationViewModel
     {
-        public ReservationViewModel(MainViewModel mainViewModel, ReservationService reservationService, WorkspaceService workspaceService)
+        public ReservationViewModel(MainViewModel mainViewModel, ReservationService reservationService, UserService userService, WorkspaceService workspaceService)
         {
             ReservationService = reservationService;
+            UserService = userService;
             WorkspaceService = workspaceService;
             MainViewModel = mainViewModel;
 
@@ -20,6 +22,8 @@ namespace WorkplaceReservationSystem.ViewModels
         public ReservationService ReservationService { get; }
 
         public bool IsEditMode { get; set; } = false;
+
+        public UserService UserService { get; }
 
         public WorkspaceService WorkspaceService { get; }
 
@@ -42,6 +46,7 @@ namespace WorkplaceReservationSystem.ViewModels
 
         public void UpdateAvailableWorkplaces()
         {
+            ValidationResult = ReservationService.ValidateReservation(MainViewModel.ReservationDraft);
             MainViewModel.Update();
         }
 
@@ -51,71 +56,42 @@ namespace WorkplaceReservationSystem.ViewModels
 
             if (ValidationResult.IsValid == true)
             {
-                MainViewModel.ReservationDraft.WorkplaceId = null;
+                MainViewModel.CreateNewReservationDraft();
             }
 
             MainViewModel.Update();
         }
 
         public bool CanExecuteTryCreateReservation()
-        {
-            bool result = true;
-
-            if (!MainViewModel.ReservationDraft.IsComplete)
-            {
-                result = false;
-            }
-
-            return result;
+        {            
+            return MainViewModel.ReservationDraft.IsComplete && MainViewModel.AvailableWorkplaces.Contains(MainViewModel.ReservationDraft.WorkplaceId);            
         }
 
         public void StartEditingReservation(int reservationId)
         {
-            Reservation reservation = ReservationService.GetReservationById(reservationId);
-
-            ReservationBeingEdited = reservation;
-            MainViewModel.ReservationDraft = reservation.Copy();
-
-            ReservationService.DeleteReservation(reservationId);
+            MainViewModel.ReservationDraft = ReservationService.GetReservationById(reservationId).Copy(); 
             IsEditMode = true;
             MainViewModel.Update();             
         }
 
         public void SaveEditedReservation()
         {
-            if (ReservationBeingEdited != null)
-            {
-                ReservationBeingEdited = null;
-                ReservationService.TryCreateReservation(MainViewModel.ReservationDraft);
-            }
-
+            ReservationService.UpdateReservation(MainViewModel.ReservationDraft); 
             IsEditMode = false;
-            MainViewModel.SelectWorkplace(null);
+            MainViewModel.CreateNewReservationDraft();
+            MainViewModel.Update();
         }
 
         public bool CanExecuteSaveEditedReservation()
         {
-            bool result = true;
-
-            if (!MainViewModel.ReservationDraft.IsComplete)
-            {
-                result = false;
-            }
-
-            return result;
+            return MainViewModel.ReservationDraft.IsComplete && MainViewModel.AvailableWorkplaces.Contains(MainViewModel.ReservationDraft.WorkplaceId);
         }
 
         public void CancelEditingReservation()
         {
-            if (ReservationBeingEdited != null)
-            {
-                MainViewModel.ReservationDraft = ReservationBeingEdited;
-                ReservationBeingEdited = null;
-                ReservationService.TryCreateReservation(MainViewModel.ReservationDraft);
-            }
-
             IsEditMode = false;
-            MainViewModel.SelectWorkplace(null);            
+            MainViewModel.CreateNewReservationDraft();
+            MainViewModel.Update();
         }
 
         public void DeleteReservation(int reservationId)
@@ -123,6 +99,7 @@ namespace WorkplaceReservationSystem.ViewModels
             ReservationService.DeleteReservation(reservationId);
             MainViewModel.Update();
         }
+        
     
         private void InitializeCommands()
         {

@@ -1,13 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using WorkplaceReservationSystem.Application.Services;
+﻿using WorkplaceReservationSystem.Application.Services;
 using WorkplaceReservationSystem.Domain;
 
 namespace WorkplaceReservationSystem.ViewModels
@@ -21,6 +12,7 @@ namespace WorkplaceReservationSystem.ViewModels
             _workspaceService = workspaceService;
             
             InitializeViewModels();
+            CreateNewReservationDraft();
         }
 
         private readonly ReservationService _reservationService;
@@ -33,41 +25,55 @@ namespace WorkplaceReservationSystem.ViewModels
         public ReservationViewModel ReservationViewModel { get; set; }
         public WorkspaceViewModel WorkspaceViewModel { get; set; }
 
-        public Reservation ReservationDraft { get; set; } = new Reservation
+        public Reservation ReservationDraft;
+
+
+        public DateOnly? ReservationDraftDate 
+        { 
+            get
+            {
+                return DateOnly.FromDateTime(ReservationDraft.Start.Value);
+            }
+            set
+            {
+                ReservationDraft.Start = new DateTime(value.Value.Year, value.Value.Month, value.Value.Day, ReservationDraft.Start.Value.Hour, ReservationDraft.Start.Value.Minute, 0);
+                ReservationDraft.End = new DateTime(value.Value.Year, value.Value.Month, value.Value.Day, ReservationDraft.End.Value.Hour, ReservationDraft.End.Value.Minute, 0);
+            }
+        }
+
+        public TimeOnly? ReservationDraftStartTime 
+        { 
+            get
+            {
+                return TimeOnly.FromDateTime(ReservationDraft.Start.Value);
+            }
+            set
+            {
+                ReservationDraft.Start = new DateTime(ReservationDraft.Start.Value.Year, ReservationDraft.Start.Value.Month, ReservationDraft.Start.Value.Day, value.Value.Hour, value.Value.Minute, 0);
+            }
+        }
+
+        public TimeOnly? ReservationDraftEndTime
         {
-            Date = DateOnly.FromDateTime(DateTime.Now),
-            StartTime = TimeOnly.FromDateTime(DateTime.Now),
-            EndTime = TimeOnly.FromDateTime(DateTime.Now.AddHours(1)),
-        };
+            get
+            {
+                return TimeOnly.FromDateTime(ReservationDraft.End.Value);
+            }
+            set
+            {
+                ReservationDraft.End = new DateTime(ReservationDraft.End.Value.Year, ReservationDraft.End.Value.Month, ReservationDraft.End.Value.Day, value.Value.Hour, value.Value.Minute, 0);
+            }
+        }
 
         public HashSet<int> AvailableWorkplaces
         {
             get
             {
-                if (_reservationService.ValidateReservation(ReservationDraft).IsValid)
-                {
-                    return _workspaceService.GetAvailability(ReservationDraft);                    
-                }
-                else
-                {
-                    return GetWorkplaceIds();
-                }
+                return _workspaceService.GetAvailability(ReservationDraft);   
             }
         }
 
-        private HashSet<int> GetWorkplaceIds()
-        {
-            HashSet<int> result = new HashSet<int>();
-
-            foreach (Workplace workplace in _workspaceService.GetWorkplaces())
-            {
-                result.Add(workplace.Id);
-            }
-
-            return result;
-        }
-
-        public void SelectWorkplace(int? id)
+        public void SelectWorkplace(int id)
         {
             if (ReservationDraft.WorkplaceId != id)
             {
@@ -75,7 +81,7 @@ namespace WorkplaceReservationSystem.ViewModels
             }
             else
             {
-                ReservationDraft.WorkplaceId = null;
+                ReservationDraft.WorkplaceId = 0;
             }
 
             Update();
@@ -86,10 +92,20 @@ namespace WorkplaceReservationSystem.ViewModels
             OnChange?.Invoke();
         }
 
-        private void InitializeViewModels()
+        public void CreateNewReservationDraft()
         {
-            ReservationViewModel = new ReservationViewModel(this, _reservationService, _workspaceService);
-            WorkspaceViewModel = new WorkspaceViewModel(this, _workspaceService);
+            ReservationDraft = new Reservation
+            {
+                UserId = _userService.CurrentUserId,                
+                Start = DateTime.Now,
+                End = DateTime.Now.AddHours(1)
+            };                
+        }
+
+    private void InitializeViewModels()
+        {
+            ReservationViewModel = new ReservationViewModel(this, _reservationService, _userService, _workspaceService);
+            WorkspaceViewModel = new WorkspaceViewModel(this, _workspaceService, _reservationService, _userService);
         }
     }
 }

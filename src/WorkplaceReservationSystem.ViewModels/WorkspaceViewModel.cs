@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using WorkplaceReservationSystem.Application.Services;
+using WorkplaceReservationSystem.Domain;
 
 namespace WorkplaceReservationSystem.ViewModels
 {
@@ -16,15 +17,19 @@ namespace WorkplaceReservationSystem.ViewModels
             InitializeCommands();
         }
 
-        public WorkspaceViewModel(MainViewModel mainViewModel, WorkspaceService workspaceService)
+        public WorkspaceViewModel(MainViewModel mainViewModel, WorkspaceService workspaceService, ReservationService reservationService, UserService userService)
         {
             MainViewModel = mainViewModel;
             WorkspaceService = workspaceService;
+            ReservationService = reservationService;
+            UserService = userService;
 
             InitializeCommands();
         }
 
         public WorkspaceService WorkspaceService {get; set; }
+        public ReservationService ReservationService { get; set; }
+        public UserService UserService { get; set; }
 
         public MainViewModel MainViewModel { get; }
 
@@ -33,6 +38,23 @@ namespace WorkplaceReservationSystem.ViewModels
         public void ExecuteChangeSelectedWorkplace(int workplaceId)
         {
             MainViewModel.SelectWorkplace(workplaceId);
+        }
+
+        public WorkplaceReservationDTO? GetWorkplaceReservation(Reservation reservationDraft, int workplaceId)
+        {
+            WorkplaceReservationDTO result = new WorkplaceReservationDTO();
+            
+            Reservation? conflictingReservation = ReservationService.GetConflictingReservation(reservationDraft, workplaceId);
+
+            if(conflictingReservation == null)
+            {
+                return null;
+            }
+
+            result.Reservation = conflictingReservation;
+            result.User = UserService.GetUserById(result.Reservation.UserId);
+
+            return result;
         }
 
         private void InitializeCommands()

@@ -20,13 +20,6 @@ namespace WorkplaceReservationSystem.Domain.Services
                 return result;
             }
 
-            result = ValidateDate(reservation);
-
-            if (!result.IsValid)
-            {
-                return result;
-            }
-
             result = ValidateTime(reservation);
 
             if (!result.IsValid)
@@ -37,7 +30,7 @@ namespace WorkplaceReservationSystem.Domain.Services
             return result;
         }
 
-        public ValidationResult Validate(Reservation reservation, List<Reservation> reservations)
+        public ValidationResult Validate(Reservation reservation, Reservation? conflictingReservation)
         {
             ValidationResult result = new ValidationResult();          
             result.IsValid = true;
@@ -47,14 +40,7 @@ namespace WorkplaceReservationSystem.Domain.Services
                 result.IsValid = false;
                 result.ErrorMessage = "Die Reservierung ist unvollständig.";
                 return result;
-            }     
-
-            result = ValidateDate(reservation);
-
-            if (!result.IsValid)
-            {
-                return result;
-            }
+            }   
             
             result = ValidateTime(reservation);
 
@@ -63,7 +49,7 @@ namespace WorkplaceReservationSystem.Domain.Services
                 return result;
             }
             
-            result = ValidateOverlap(reservation, reservations);           
+            result = ValidateOverlap(conflictingReservation);           
 
             return result;
         }
@@ -73,47 +59,34 @@ namespace WorkplaceReservationSystem.Domain.Services
             ValidationResult result = new ValidationResult();
             result.IsValid = true;
 
-            if (reservation.StartTime >= reservation.EndTime)
+            if (reservation.Start <= DateTime.Now.AddMinutes(-5))
+            {
+                result.IsValid = false;
+                result.ErrorMessage = "Die Startzeit darf nicht in der Vergangenheit liegen.";
+                return result;
+            }
+
+            if (reservation.Start >= reservation.End)
             {
                 result.IsValid = false;
                 result.ErrorMessage = "Die Startzeit muss vor der Endzeit liegen.";
+                return result;
             }
 
             return result;
         }
 
-        private ValidationResult ValidateDate(Reservation reservation)
+        private ValidationResult ValidateOverlap(Reservation? conflictingReservation)
         {
             ValidationResult result = new ValidationResult();
             result.IsValid = true;
 
-            if (reservation.Date < DateOnly.FromDateTime(DateTime.Now))
+            if (conflictingReservation != null)
             {
                 result.IsValid = false;
-                result.ErrorMessage = "Das Datum darf nicht in der Vergangenheit liegen.";
+                result.ErrorMessage = "Der ausgewählte Arbeitsplatz ist im gewünschten Zeitraum belegt.";
             }
-
-            return result;
-        }
-
-        private ValidationResult ValidateOverlap(Reservation reservation, List<Reservation> reservations)
-        {
-            ValidationResult result = new ValidationResult();
-            result.IsValid = true;
-
-            foreach (Reservation existingReservation in reservations)
-            {   
-                if(reservation.Date == existingReservation.Date)
-                {
-                    if (!(reservation.StartTime >= existingReservation.EndTime || reservation.EndTime <= existingReservation.StartTime))
-                    {
-                        result.IsValid = false;
-                        result.ErrorMessage = "Der ausgewählte Arbeitsplatz ist im gewünschten Zeitraum belegt.";
-                        break;
-                    }
-                }
-            }
-
+            
             return result;
         }
     }

@@ -21,6 +21,35 @@ namespace WorkplaceReservationSystem.Application.Services
             _dbContext.SaveChanges();
         }
 
+        public ValidationResult UpdateReservation(Reservation updatedDraft)
+        {
+            ValidationResult result = new ValidationResult();
+            result = ValidateReservation(updatedDraft);
+
+            if(!result.IsValid)
+            {
+                return result;
+            }
+
+            Reservation? existingReservation = GetReservationById(updatedDraft.Id);
+
+            if(existingReservation == null)
+            {
+                result.IsValid = false;
+                result.ErrorMessage = "Reservierung nicht gefunden";
+
+                return result;
+            }
+
+            existingReservation.WorkplaceId = updatedDraft.WorkplaceId;
+            existingReservation.Start = updatedDraft.Start;
+            existingReservation.End = updatedDraft.End;
+
+            _dbContext.SaveChanges();
+
+            return result;
+        }
+
         public ValidationResult ValidateReservation(Reservation reservation)
         {           
             return _reservationValidator.Validate(reservation);
@@ -29,7 +58,12 @@ namespace WorkplaceReservationSystem.Application.Services
         public ValidationResult ValidateWorkplaceAvailability(Reservation reservation, int workplaceId)
         {
 
-            return _reservationValidator.Validate(reservation, GetReservationsByWorkplaceId(workplaceId));
+            return _reservationValidator.Validate(reservation, GetConflictingReservation(reservation, workplaceId));
+        }
+
+        public Reservation? GetConflictingReservation(Reservation reservationDraft, int workplaceId)
+        {
+            return _dbContext.Reservations.FirstOrDefault(reservation => reservation.WorkplaceId == workplaceId && reservation.Id != reservationDraft.Id && reservation.Start < reservationDraft.End && reservation.End > reservationDraft.Start);
         }
 
         public void DeleteReservation(int reservationId)
@@ -41,12 +75,17 @@ namespace WorkplaceReservationSystem.Application.Services
 
         public List<Reservation> GetReservations()
         {
-            return _dbContext.Reservations.OrderBy(reservation => reservation.Date).ThenBy(reservation => reservation.StartTime).ToList();
+            return _dbContext.Reservations.OrderBy(reservation => reservation.Start).ToList();
         }
 
         public Reservation GetReservationById(int reservationId)
         {
             return _dbContext.Reservations.FirstOrDefault(reservation => reservation.Id == reservationId);
+        }
+
+        public List<Reservation> GetReservationsByUserId(int userId)
+        {
+            return _dbContext.Reservations.Where(reservation => reservation.UserId == userId).ToList();
         }
 
         public List<Reservation> GetReservationsByWorkplaceId(int workplaceId)
@@ -65,10 +104,8 @@ namespace WorkplaceReservationSystem.Application.Services
                 Debug.WriteLine($"Validation failed: {result.ErrorMessage}");
                 return result;
             }
-
-            List<Reservation> workplaceReservations = GetReservationsByWorkplaceId(reservation.WorkplaceId.Value);
-
-            result = _reservationValidator.Validate(reservation, workplaceReservations);
+                       
+            result = _reservationValidator.Validate(reservation, GetConflictingReservation(reservation, reservation.WorkplaceId));
 
             if (result.IsValid)
             {

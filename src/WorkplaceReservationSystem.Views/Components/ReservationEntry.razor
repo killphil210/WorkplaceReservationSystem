@@ -1,6 +1,6 @@
 ﻿
 <div class="reservation-entry-grid">
-    <label>@Reservation.Date.ToString(): @Reservation.StartTime.ToString() - @Reservation.EndTime.ToString()  | AP_@Reservation.WorkplaceId</label>
+    <label>@DateOnly.FromDateTime(Reservation.Start.Value).ToString(): @TimeOnly.FromDateTime(Reservation.Start.Value).ToString() - @TimeOnly.FromDateTime(Reservation.End.Value).ToString()  | AP_@Reservation.WorkplaceId</label>
     <button @onclick="OnEditButtonClicked">Edit</button>
     <button @onclick="OnDeleteButtonClicked">Delete</button>
 </div>

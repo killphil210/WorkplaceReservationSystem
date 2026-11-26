@@ -1,7 +1,13 @@
 ﻿<div 
     class="desk-container"
     style="background: @Color"
-    @onclick="HandleClick">@Workplace.Name
+     @onclick="HandleClick">
+    @Workplace.Name: 
+    @if(WorkPlaceReservationDTO != null)
+    {
+        @WorkPlaceReservationDTO.DisplayString
+    }
 </div>
+
 
 

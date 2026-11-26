@@ -14,28 +14,26 @@ namespace WorkplaceReservationSystem.Domain
 
         }
 
-        public Reservation(DateOnly Date, TimeOnly StartTime, TimeOnly EndTime, int id, int workplaceId)
-        {
-            this.Date = Date;
-            this.StartTime = StartTime;
-            this.EndTime = EndTime;
+        public Reservation(DateTime Start, DateTime End, int id, int workplaceId)
+        {            
+            this.Start = Start;
+            this.End = End;
             this.Id = id;
             this.WorkplaceId = workplaceId;
         }
 
         public int Id { get; set; }
-        public int? WorkplaceId { get; set; }
+        public int WorkplaceId { get; set; }
         public int UserId { get; set; }
 
-        public DateOnly? Date { get; set; }
-        public TimeOnly? StartTime { get; set; }
-        public TimeOnly? EndTime { get; set; }
+        public DateTime? Start { get; set; }
+        public DateTime? End { get; set; }
 
         public bool IsComplete
         {
             get
             {
-                return Date.HasValue && StartTime.HasValue && EndTime.HasValue && WorkplaceId.HasValue;
+                return Start.HasValue && End.HasValue && (WorkplaceId != 0);
             }
         }
 
@@ -43,7 +41,7 @@ namespace WorkplaceReservationSystem.Domain
         {
             get
             {
-                return Date.HasValue && StartTime.HasValue && EndTime.HasValue;
+                return Start.HasValue && End.HasValue;
             }            
         }
 
@@ -54,9 +52,8 @@ namespace WorkplaceReservationSystem.Domain
             result.Id = this.Id;
             result.WorkplaceId = this.WorkplaceId;
             result.UserId = this.UserId;
-            result.Date = this.Date;
-            result.StartTime = this.StartTime;
-            result.EndTime = this.EndTime;
+            result.Start = this.Start;
+            result.End = this.End;
 
             return result;
         }

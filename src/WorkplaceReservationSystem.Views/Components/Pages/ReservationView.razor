@@ -3,13 +3,13 @@
     
     
     <label class="reservation-label">Datum:</label>
-    <input type="date" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.Date" @bind-value:after="OnReservationDraftChanged" />
+    <input type="date" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraftDate" @bind-value:after="OnReservationDraftChanged" />
     <div class="date-spacer"/>
     <label class="reservation-label">Von:</label>
-    <input type="time" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.StartTime" @bind-value:after="OnReservationDraftChanged" />
+    <input type="time" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraftStartTime" @bind-value:after="OnReservationDraftChanged" />
 
     <label class="reservation-label">Bis:</label>
-    <input type="time" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraft.EndTime" @bind-value:after="OnReservationDraftChanged" />
+    <input type="time" class="reservation-input" @bind-value="DataContext.MainViewModel.ReservationDraftEndTime" @bind-value:after="OnReservationDraftChanged" />
 
     <label class="error-label">@DataContext.ValidationResult.ErrorMessage</label>
 
@@ -37,9 +37,13 @@
 
     <label class="reservation-list-header">Meine Reservierungen: </label>
     <div class="reservation-list">
-        @foreach (Reservation reservation in DataContext.ReservationService.GetReservations())
+        @foreach (Reservation reservation in DataContext.ReservationService.GetReservationsByUserId(DataContext.UserService.CurrentUserId))
         {
-            <ReservationEntry Reservation="reservation" OnAction="OnReservationEntryAction"/>          
+            if(reservation.End >= DateTime.Now && reservation.Id != DataContext.MainViewModel.ReservationDraft.Id)
+            {
+                <ReservationEntry Reservation="reservation" OnAction="OnReservationEntryAction"/>
+            }
+            
         }
     </div>
 </div>

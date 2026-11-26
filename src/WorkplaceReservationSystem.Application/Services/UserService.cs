@@ -19,6 +19,12 @@ namespace WorkplaceReservationSystem.Application.Services
 
         private readonly WorkplaceReservationDbContext _dbContext;
 
+        public int CurrentUserId { get; set; } = 3;
+
+        public User GetUserById(int userId)
+        {
+            return _dbContext.Users.FirstOrDefault(user => user.Id == userId);
+        }
 
         public void InitializeDB()
         {

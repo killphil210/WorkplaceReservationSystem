@@ -14,8 +14,13 @@ namespace WorkplaceReservationSystem.Views.Components
         [Parameter] 
         public EventCallback<int> OnClick { get; set; }
 
-        [Parameter] public Workplace Workplace { get; set; } = new Workplace();
+        [Parameter] 
+        public Workplace Workplace { get; set; } = new Workplace();
 
+        [Parameter]
+        public WorkplaceReservationDTO? WorkPlaceReservationDTO { get; set; } = null;
+
+        
         public string Color
         {
             get 
